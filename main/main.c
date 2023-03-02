@@ -16,8 +16,8 @@
 #include "bsp_storage.h"
 #include "settings.h"
 #include "app_led.h"
-#include "app_rmaker.h"
 #include "app_sr.h"
+#include "app_wifi.h"
 #include "audio_player.h"
 #include "file_iterator.h"
 #include "gui/ui_main.h"
@@ -125,5 +125,11 @@ void app_main(void)
     app_pwm_led_init(brd->PMOD2->row1[1], brd->PMOD2->row1[2], brd->PMOD2->row1[3]);
     ESP_LOGI(TAG, "speech recognition start");
     app_sr_start(false);
-    app_rmaker_start();
+
+    /* Initialize Wi-Fi. */
+    app_wifi_init();
+    err = app_wifi_start();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Could not start Wifi");
+    }
 }

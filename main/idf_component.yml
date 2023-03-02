@@ -5,12 +5,6 @@ dependencies:
   chmorgan/esp-libhelix-mp3: "1.0.3"
   
   espressif/esp-box: "~2.2.0"
-  espressif/esp_rainmaker:
-    path: components/esp_rainmaker
-    git: https://github.com/espressif/esp-rainmaker.git
-  espressif/esp_schedule:
-    path: components/esp_schedule
-    git: https://github.com/espressif/esp-rainmaker.git
   espressif/esp-sr: ^1
   espressif/led_strip:
     version: "~2.0.0"
@@ -22,4 +16,3 @@ dependencies:
     version: ^0.1.0
     rules:
       - if: "idf_version >=5.0"
-  espressif/rmaker_common: ^1

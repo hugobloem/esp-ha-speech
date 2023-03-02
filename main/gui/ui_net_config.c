@@ -9,7 +9,6 @@
 #include "bsp_board.h"
 #include "lvgl.h"
 #include "app_wifi.h"
-#include "app_rmaker.h"
 #include "ui_main.h"
 #include "ui_net_config.h"
 
@@ -180,9 +179,9 @@ void ui_net_config_update_cb(ui_net_state_t state, void *args)
     case UI_NET_EVT_CLOUD_CONNECTED: {
         char ssid[64] = {0};
         app_wifi_get_wifi_ssid(ssid, sizeof(ssid));
-        LV_IMG_DECLARE(icon_rmaker);
+        LV_IMG_DECLARE(icon_connected);
         g_img = lv_img_create(g_page);
-        lv_img_set_src(g_img, &icon_rmaker);
+        lv_img_set_src(g_img, &icon_connected);
         lv_obj_align(g_img, LV_ALIGN_CENTER, 0, -10);
         lv_obj_clear_flag(g_hint_lab, LV_OBJ_FLAG_HIDDEN);
         lv_label_set_text_fmt(g_hint_lab, "Device already connected to cloud\n"
