@@ -168,11 +168,15 @@ void ui_net_config_update_cb(ui_net_state_t state, void *args)
         lv_label_set_text(g_hint_lab, "Connecting to Wi-Fi ...");
         break;
     case UI_NET_EVT_WIFI_CONNECTED: {
+        char ssid[64] = {0};
+        app_wifi_get_wifi_ssid(ssid, sizeof(ssid));
         if (g_qr) {
             lv_obj_add_flag(g_qr, LV_OBJ_FLAG_HIDDEN);
         }
         lv_obj_clear_flag(g_hint_lab, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text(g_hint_lab, "Connecting to Rainmaker ...");
+        lv_label_set_text_fmt(g_hint_lab, "Connecting to HA ...\n"
+                          "Wi-Fi is connected to:\n"
+                          "#000000 %s#", ssid);
         lv_obj_align(g_hint_lab, LV_ALIGN_CENTER, 0, 0);
     }
     break;
@@ -184,8 +188,9 @@ void ui_net_config_update_cb(ui_net_state_t state, void *args)
         lv_img_set_src(g_img, &icon_connected);
         lv_obj_align(g_img, LV_ALIGN_CENTER, 0, -10);
         lv_obj_clear_flag(g_hint_lab, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_fmt(g_hint_lab, "Device already connected to cloud\n"
-                              "Wi-Fi is connected to #000000 %s#", ssid);
+        lv_label_set_text_fmt(g_hint_lab, "Device already connected to HA\n"
+                              "Wi-Fi is connected to\n"
+                              "#000000 %s#", ssid);
         lv_obj_align_to(g_hint_lab, g_img, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
     }
     break;
