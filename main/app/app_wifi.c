@@ -16,6 +16,7 @@
 
 #include "app_wifi.h"
 #include "app_sntp.h"
+#include "app_hass.h"
 #include "ui_main.h"
 #include "ui_net_config.h"
 
@@ -243,6 +244,8 @@ esp_err_t app_wifi_start(void) {
     ui_net_config_update_cb(UI_NET_EVT_WIFI_CONNECTED, NULL);
     /* Sync time */
     app_sntp_init();
+
+    app_hass_init();
 
     return ESP_OK;
 }
