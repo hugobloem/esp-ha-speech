@@ -9,7 +9,8 @@
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_check.h"
-#include "app_led.h"
+// #include "app_led.h"
+#include "app_hass.h"
 #include "app_sr.h"
 #include "file_manager.h"
 #include "audio_player.h"
@@ -199,43 +200,8 @@ void sr_handler_task(void *pvParam)
             }
 #endif
 
-            switch (cmd->cmd) {
-            case SR_CMD_SET_RED:
-                app_pwm_led_set_all(128, 0, 0);
-                break;
-            case SR_CMD_SET_GREEN:
-                app_pwm_led_set_all(0, 128, 0);
-                break;
-            case SR_CMD_SET_BLUE:
-                app_pwm_led_set_all(0, 0, 128);
-                break;
-            case SR_CMD_LIGHT_ON:
-                app_pwm_led_set_power(1);
-                break;
-            case SR_CMD_LIGHT_OFF:
-                app_pwm_led_set_power(0);
-                break;
-            case SR_CMD_CUSTOMIZE_COLOR: {
-                uint16_t h;
-                uint8_t s, v;
-                app_pwm_led_get_customize_color(&h, &s, &v);
-                app_pwm_led_set_all_hsv(h, s, v);
-            } break;
-            case SR_CMD_NEXT:
-                file_iterator_next(file_iterator);
-                break;
-            case SR_CMD_PLAY:
-                audio_player_resume();
-                last_player_state = AUDIO_PLAYER_STATE_PLAYING;
-                break;
-            case SR_CMD_PAUSE:
-                audio_player_pause();
-                last_player_state = AUDIO_PLAYER_STATE_PAUSE;
-                break;
-            default:
-                ESP_LOGE(TAG, "Unknow cmd");
-                break;
-            }
+            app_hass_send_cmd((char *) cmd->str);
+            
 #if !SR_RUN_TEST
             if (SR_LANG_EN == sr_current_lang) {
                 strncpy(audio_file, "/spiffs/echo_en_ok.wav", sizeof(audio_file));

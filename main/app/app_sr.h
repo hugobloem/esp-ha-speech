@@ -41,16 +41,10 @@ typedef struct {
  *
  */
 typedef enum {
-    SR_CMD_SET_RED = 0,
-    SR_CMD_SET_GREEN,
-    SR_CMD_SET_BLUE,
-    SR_CMD_LIGHT_ON,
-    SR_CMD_LIGHT_OFF,
-    SR_CMD_CUSTOMIZE_COLOR,
-    SR_CMD_NEXT,
-    SR_CMD_PLAY,
-    SR_CMD_PAUSE,
-    SR_CMD_MAX,
+    SR_CMD_CORNER_ON=0,
+    SR_CMD_CORNER_OFF,
+    SR_CMD_DESK_ON,
+    SR_CMD_DESK_OFF,
 } sr_user_cmd_t;
 
 typedef enum {
