@@ -17,6 +17,8 @@
 #include "nvs_flash.h"
 #include "esp_sntp.h"
 
+#include "secrets.h"
+
 static const char *TAG = "sntp";
 
 /* Variable holding number of times ESP32 restarted since first boot.
@@ -53,7 +55,7 @@ void app_sntp_init(void)
     time(&now);
     localtime_r(&now, &timeinfo);
     // Set timezone to China Standard Time
-    setenv("TZ", "CST-8", 1);
+    setenv("TZ", CONFIG_TZ, 1);
     tzset();
     // Is time set? If not, tm_year will be (1970 - 1900).
     if (timeinfo.tm_year < (2016 - 1900)) {
