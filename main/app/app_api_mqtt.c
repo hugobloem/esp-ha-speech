@@ -1,18 +1,11 @@
 #include <string.h>
-// #include "esp_wifi.h"
 #include "esp_system.h"
-// #include "nvs_flash.h"
 #include "esp_event.h"
-// #include "esp_netif.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
-
-// #include "lwip/sockets.h"
-// #include "lwip/dns.h"
-// #include "lwip/netdb.h"
 
 #include "esp_log.h"
 #include "mqtt_client.h"
@@ -24,6 +17,7 @@
 
 static const char *TAG = "app_api_mqtt";
 static esp_mqtt_client_handle_t client = NULL;
+static bool mqtt_connected = false;
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -31,6 +25,40 @@ static void log_error_if_nonzero(const char *message, int error_code)
         ESP_LOGE(TAG, "Last error %s: 0x%x", message, error_code);
     }
 }
+
+
+void data_handler(char *topic_, char *data_, int topic_len, int data_len)
+{
+    // Limit topic and data to 64 and 128 chars max
+    char topic[512];
+    char data[2048];
+    strncpy(topic, topic_, topic_len);
+    strncpy(data, data_, data_len);
+    topic[topic_len] = '\0';
+    data[data_len] = '\0';
+
+    // TODO: change to strtok
+    // topic starts with "hermes/"
+    if (strncmp(topic, "hermes/", 7) == 0) {
+        // Handle hermes messages
+        ESP_LOGI(TAG, "hermes message: %s", data);
+        // app_hass_handle_hermes(topic, data);
+    } else if (strncmp(topic, "esp-ha/", 7) == 0) {
+        // Handle esp-ha messages
+        ESP_LOGI(TAG, "esp-ha message: %s", data);
+
+        if (strncmp(topic, "esp-ha/config/add_cmd", 21) == 0) {
+            // Handle config messages
+            ESP_LOGI(TAG, "adding command");
+            app_hass_add_cmd(data);
+        } else if (strncmp(topic, "esp-ha/config/rm_all", 24) == 0) {
+            // Handle config messages
+            ESP_LOGI(TAG, "removing all commands");
+            app_hass_rm_all_cmd(data);
+        }
+    }
+}
+
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
@@ -42,10 +70,14 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
         ui_net_config_update_cb(UI_NET_EVT_CLOUD_CONNECTED, NULL);
+        // Set connected flag
+        mqtt_connected = true;
         break;
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
         ui_net_config_update_cb(UI_NET_EVT_WIFI_CONNECTED, NULL);
+        // Set connected flag
+        mqtt_connected = false;
         break;
 
     case MQTT_EVENT_SUBSCRIBED:
@@ -59,6 +91,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         break;
     case MQTT_EVENT_DATA:
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+        // handle data
+        data_handler(event->topic, event->data, event->topic_len, event->data_len);
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -70,14 +104,18 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
         }
         break;
+    case MQTT_EVENT_BEFORE_CONNECT:
+        ESP_LOGI(TAG, "MQTT_EVENT_BEFORE_CONNECT");
+        break;
     default:
         ESP_LOGI(TAG, "Other event id:%d", event->event_id);
         break;
     }
 }
 
-/* start mqtt client */
-void app_api_mqtt_start(void)
+
+// async connect to mqtt server
+esp_err_t mqtt_connect(void)
 {
     esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = MQTT_URL,
@@ -88,8 +126,23 @@ void app_api_mqtt_start(void)
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
 
-    // Subscribe to the Hermes in
-    esp_mqtt_client_subscribe(client, "hermes", 0);
+    // Wait for connection
+    while (!mqtt_connected) {
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+
+    return ESP_OK;
+}
+
+/* start mqtt client */
+void app_api_mqtt_start(void)
+{
+    ESP_ERROR_CHECK(mqtt_connect());
+
+    // Subscribe to hermes and configuration topics
+    esp_mqtt_client_subscribe(client, "hermes/#", 0);
+    esp_mqtt_client_subscribe(client, "esp-ha/#", 0);
+
 }
 
 /* send commands to mqtt */

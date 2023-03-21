@@ -69,10 +69,10 @@ static sr_data_t *g_sr_data = NULL;
  */
 static const sr_cmd_t g_default_cmd_info[] = {
     // English
-    {SR_CMD_CORNER_ON,  SR_LANG_EN, 0, "Turn On the Corner Light",  "TkN nN jc KeRNk LiT", {NULL}},
-    {SR_CMD_CORNER_OFF, SR_LANG_EN, 0, "Turn Off the Corner Light", "TkN eF jc KeRNk LiT", {NULL}},
-    {SR_CMD_DESK_ON, SR_LANG_EN, 0, "Turn On the Desk Lamp", "TkN nN jc DfSK LaMP", {NULL}},
-    {SR_CMD_DESK_OFF,  SR_LANG_EN, 0, "Turn Off the Desk Lamp", "TkN eF jc DfSK LaMP", {NULL}},
+    {SR_CMD,  SR_LANG_EN, 0, "Turn On the Corner Light",  "TkN nN jc KeRNk LiT", {NULL}},
+    {SR_CMD, SR_LANG_EN, 0, "Turn Off the Corner Light", "TkN eF jc KeRNk LiT", {NULL}},
+    {SR_CMD, SR_LANG_EN, 0, "Turn On the Desk Lamp", "TkN nN jc DfSK LaMP", {NULL}},
+    {SR_CMD,  SR_LANG_EN, 0, "Turn Off the Desk Lamp", "TkN eF jc DfSK LaMP", {NULL}},
 
 };
 

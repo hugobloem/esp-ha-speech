@@ -41,10 +41,7 @@ typedef struct {
  *
  */
 typedef enum {
-    SR_CMD_CORNER_ON=0,
-    SR_CMD_CORNER_OFF,
-    SR_CMD_DESK_ON,
-    SR_CMD_DESK_OFF,
+    SR_CMD=0,
 } sr_user_cmd_t;
 
 typedef enum {
