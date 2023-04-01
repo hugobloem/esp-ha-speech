@@ -5,7 +5,7 @@ dependencies:
   chmorgan/esp-libhelix-mp3: "1.0.3"
   
   espressif/esp-box: "~2.2.0"
-  espressif/esp-sr: ^1
+  espressif/esp-sr: "1.2.0"
   espressif/led_strip:
     version: "~2.0.0"
     rules:
