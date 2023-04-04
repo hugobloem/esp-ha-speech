@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/42470993/226731674-cff14709-fd51-44b7-
   3. MQTT
   4. Rhasspy (optional)
 
-To get started please copy secrets_template.h to secrets.h and edit the variables in there. After that you can flash your ESP-BOX using esptool. I recommend using the Visual Studio Code ESP-IDF plugin as it installs all the required programs for you and flashed the device seamlessly. After that you can connect the device to your network by connecting to the hotspot it creates and filling in the network details.
+To get started please copy secrets_template.h to secrets.h and edit the variables in there. After that you can flash your ESP-BOX using esptool. I recommend using the Visual Studio Code ESP-IDF plugin as it installs all the required programs for you and flashed the device seamlessly. 
 
 ## Managing voice commands
 As of now voice commands can be sending MQTT messages to the `esp-ha/config/add_cmd` topic. As data you should provide a json like this: `{"text": "<your voice command>", "phonetic": "<phonetic voice command"}`. The `text` entry is the command you would like to send to Home Assistant/Rhasspy for recognition. The `phonetic` entry is the phonetic version of it. This phonetic version can be generated using the following python command `python esp-ha\managed_components\espressif__esp-sr\tool\multinet_g2p.py -t <your voice command>`.
