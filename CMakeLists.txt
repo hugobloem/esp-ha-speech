@@ -11,4 +11,4 @@ set(EXTRA_COMPONENT_DIRS
 
 add_compile_options(-fdiagnostics-color=always)
 
-project(factory_demo)
+project(esp-ha-speech)
