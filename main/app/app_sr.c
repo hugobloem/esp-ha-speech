@@ -69,11 +69,8 @@ static sr_data_t *g_sr_data = NULL;
  */
 static const sr_cmd_t g_default_cmd_info[] = {
     // English
-    {SR_CMD,  SR_LANG_EN, 0, "Turn On the Corner Light",  "TkN nN jc KeRNk LiT", {NULL}},
-    {SR_CMD, SR_LANG_EN, 0, "Turn Off the Corner Light", "TkN eF jc KeRNk LiT", {NULL}},
-    {SR_CMD, SR_LANG_EN, 0, "Turn On the Desk Lamp", "TkN nN jc DfSK LaMP", {NULL}},
-    {SR_CMD,  SR_LANG_EN, 0, "Turn Off the Desk Lamp", "TkN eF jc DfSK LaMP", {NULL}},
-
+    {SR_CMD,  SR_LANG_EN, 0, "Turn On the Light",  "TkN nN jc LiT", {NULL}},
+    {SR_CMD, SR_LANG_EN, 0, "Turn Off the Light", "TkN eF jc LiT", {NULL}},
 };
 
 static void audio_feed_task(void *arg)
@@ -472,6 +469,7 @@ esp_err_t app_sr_remove_all_cmd(void)
         heap_caps_free(it);
     }
     SLIST_INIT(&g_sr_data->cmd_list);
+    g_sr_data->cmd_num = 0;
     return ESP_OK;
 }
 
@@ -534,7 +532,7 @@ uint8_t app_sr_search_cmd_from_phoneme(const char *phoneme, uint8_t *id_list, ui
     return cmd_num;
 }
 
-const sr_cmd_t *app_sr_get_cmd_from_id(uint32_t id)
+sr_cmd_t *app_sr_get_cmd_from_id(uint32_t id)
 {
     ESP_RETURN_ON_FALSE(NULL != g_sr_data, NULL, TAG, "SR is not running");
     ESP_RETURN_ON_FALSE(id < g_sr_data->cmd_num, NULL, TAG, "cmd id out of range");

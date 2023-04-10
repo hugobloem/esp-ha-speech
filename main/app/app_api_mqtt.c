@@ -50,7 +50,7 @@ void data_handler(char *topic_, char *data_, int topic_len, int data_len)
         if (strncmp(topic, "esp-ha/config/add_cmd", 21) == 0) {
             // Handle config messages
             ESP_LOGI(TAG, "adding command");
-            app_hass_add_cmd(data);
+            app_hass_add_cmd_from_msg(data);
         } else if (strncmp(topic, "esp-ha/config/rm_all", 24) == 0) {
             // Handle config messages
             ESP_LOGI(TAG, "removing all commands");
