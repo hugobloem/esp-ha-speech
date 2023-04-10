@@ -186,14 +186,7 @@ void app_hass_add_cmd(char *cmd, char *phoneme, bool commit)
     }
 }
 
-void app_hass_add_cmd_from_msg(char *msg) {
-    // Parse message as json
-    cJSON *root = cJSON_Parse(msg);
-    if (root == NULL) {
-        ESP_LOGE(TAG, "Error parsing json");
-        cJSON_Delete(root);
-        return;
-    }
+void app_hass_add_cmd_from_msg(cJSON *root) {
     // Get command to add
     cJSON *sr_txt = cJSON_GetObjectItemCaseSensitive(root, "text");
     cJSON *sr_phn = cJSON_GetObjectItemCaseSensitive(root, "phonetic");
@@ -212,14 +205,7 @@ void app_hass_add_cmd_from_msg(char *msg) {
     }
 }
 
-void app_hass_rm_all_cmd(char* msg) {
-    // Parse message as json
-    cJSON *root = cJSON_Parse(msg);
-    if (root == NULL) {
-        ESP_LOGE(TAG, "Error parsing json");
-        cJSON_Delete(root);
-        return;
-    }
+void app_hass_rm_all_cmd(cJSON *root) {
     // Get command to add
     cJSON *sr_txt = cJSON_GetObjectItemCaseSensitive(root, "confirm");
     if (sr_txt == NULL) {

@@ -27,36 +27,44 @@ static void log_error_if_nonzero(const char *message, int error_code)
 }
 
 
-void data_handler(char *topic_, char *data_, int topic_len, int data_len)
+esp_err_t data_handler(char *topic_, char *data, int topic_len, int data_len)
 {
     // Limit topic and data to 64 and 128 chars max
     char topic[512];
-    char data[2048];
     strncpy(topic, topic_, topic_len);
-    strncpy(data, data_, data_len);
     topic[topic_len] = '\0';
-    data[data_len] = '\0';
+
+    cJSON *jData = cJSON_ParseWithLength(data, data_len);
+    if (jData == NULL) {
+        ESP_LOGE(TAG, "Error parsing json");
+        cJSON_Delete(jData);
+        return ESP_FAIL;
+    }
 
     // TODO: change to strtok
     // topic starts with "hermes/"
     if (strncmp(topic, "hermes/", 7) == 0) {
         // Handle hermes messages
-        ESP_LOGI(TAG, "hermes message: %s", data);
-        // app_hass_handle_hermes(topic, data);
-    } else if (strncmp(topic, "esp-ha/", 7) == 0) {
+        ESP_LOGI(TAG, "hermes message: %s", jData);
+        // app_hass_handle_hermes(topic, jData);
+
+
+    } else if (strncmp(topic, "esp-ha-speech/", 7) == 0) {
         // Handle esp-ha messages
-        ESP_LOGI(TAG, "esp-ha message: %s", data);
+        ESP_LOGI(TAG, "esp-ha message: %s", jData);
 
         if (strncmp(topic, "esp-ha/config/add_cmd", 21) == 0) {
             // Handle config messages
             ESP_LOGI(TAG, "adding command");
-            app_hass_add_cmd_from_msg(data);
+            app_hass_add_cmd_from_msg(jData);
+
         } else if (strncmp(topic, "esp-ha/config/rm_all", 24) == 0) {
             // Handle config messages
             ESP_LOGI(TAG, "removing all commands");
-            app_hass_rm_all_cmd(data);
+            app_hass_rm_all_cmd(jData);
         }
     }
+    return ESP_OK;
 }
 
 
