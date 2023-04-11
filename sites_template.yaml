@@ -1,0 +1,12 @@
+mqtt:
+  host: homeassistant.local
+  port: 1883
+  username: "your_mqtt_username"
+  password: "your_mqtt_password"
+  topic: esp-ha-speech
+
+sites:
+  esp32: # This is the name of the site/satellite
+    lights:
+      - "Light 1"
+      - "Light 2"
