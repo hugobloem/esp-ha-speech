@@ -86,3 +86,4 @@ managed_components
 
 # Secrets file
 secrets.h
+sites.yaml
