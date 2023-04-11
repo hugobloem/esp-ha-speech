@@ -192,7 +192,6 @@ void app_hass_add_cmd_from_msg(cJSON *root) {
     cJSON *sr_phn = cJSON_GetObjectItemCaseSensitive(root, "phonetic");
     if (sr_txt == NULL || sr_phn == NULL) {
         ESP_LOGE(TAG, "Error parsing text");
-        cJSON_Delete(root);
         return;
     } else {
         // Add sr command to speech recognition
@@ -200,7 +199,6 @@ void app_hass_add_cmd_from_msg(cJSON *root) {
 
         app_hass_write_cmd_to_nvs(keynum, sr_txt->valuestring, sr_phn->valuestring);
         ESP_LOGI(TAG, "Added command: %s; %s", sr_txt->valuestring, sr_phn->valuestring);
-        cJSON_Delete(root);
         return;
     }
 }
@@ -210,7 +208,6 @@ void app_hass_rm_all_cmd(cJSON *root) {
     cJSON *sr_txt = cJSON_GetObjectItemCaseSensitive(root, "confirm");
     if (sr_txt == NULL) {
         ESP_LOGE(TAG, "Error parsing text");
-        cJSON_Delete(root);
         return;
     } else if (strcmp(sr_txt->valuestring, "yes") == 0) {
         // remove sr command from speech recognition
@@ -223,7 +220,6 @@ void app_hass_rm_all_cmd(cJSON *root) {
         app_hass_rm_cmds_from_nvs();
 
         ESP_LOGI(TAG, "Removed all commands");
-        cJSON_Delete(root);
         return;
     }
 }

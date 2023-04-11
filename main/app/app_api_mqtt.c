@@ -45,6 +45,18 @@ esp_err_t data_handler(char *topic_, char *data, int topic_len, int data_len)
         cJSON_Delete(jData);
         return ESP_FAIL;
     }
+    
+    cJSON *siteId = cJSON_GetObjectItemCaseSensitive(jData, "siteId");
+    if (cJSON_IsString(siteId) == 0) {
+        ESP_LOGI(TAG, "No siteId.");
+        cJSON_Delete(jData);
+        return ESP_OK;
+    } else if (strcmp(siteId->valuestring, MQTT_SITE_ID) != 0) {
+        ESP_LOGI(TAG, "siteId does not match.");
+        cJSON_Delete(jData);
+        return ESP_OK;
+    }
+
     ESP_LOGI(TAG, "subtopic: %s", subtopic);
 
     // HERMES MESSAGES"
@@ -52,33 +64,26 @@ esp_err_t data_handler(char *topic_, char *data, int topic_len, int data_len)
         // Handle hermes messages
         ESP_LOGI(TAG, "hermes message: %s", cJSON_Print(jData));
         
-        // cJSON *siteId = cJSON_GetObjectItemCaseSensitive(jData, "siteId");
-        // ESP_RETURN_ON_FALSE(cJSON_IsString(siteId) && strcmp(siteId->valuestring, MQTT_SITE_ID), ESP_FAIL, TAG, "siteId does not match");
-
 
     // ESP-HA MESSAGES"
     } else if (strcmp(subtopic, "esp-ha-speech") == 0) {
         // Handle esp-ha messages
         ESP_LOGI(TAG, "esp-ha-speech message: %s", cJSON_Print(jData));
 
-        // cJSON *siteId = cJSON_GetObjectItemCaseSensitive(jData, "siteId");
-        // ESP_RETURN_ON_FALSE(cJSON_IsString(siteId) && strcmp(siteId->valuestring, MQTT_SITE_ID), ESP_FAIL, TAG, "siteId does not match");
-
         subtopic = strtok(NULL, "/");
         if (strcmp(subtopic, "add_cmd") == 0) {
             // Handle config messages
-            ESP_LOGI(TAG, "adding command");
             app_hass_add_cmd_from_msg(jData);
 
         } else if (strcmp(subtopic, "rm_all") == 0) {
             // Handle config messages
-            ESP_LOGI(TAG, "removing all commands");
             app_hass_rm_all_cmd(jData);
 
         }
     } else {
         ESP_LOGW(TAG, "Unknown subtopic: %s", subtopic);
     }
+    cJSON_Delete(jData);
     return ESP_OK;
 }
 
