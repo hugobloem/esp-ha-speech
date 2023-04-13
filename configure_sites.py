@@ -94,16 +94,38 @@ for siteId, entities in sites.items():
     assert len(site_sentences[siteId]['text']) <= 200
 
 # Connect to MQTT
+mqtt_connected = False
 def on_connect(client, userdata, flags, rc):
+    global mqtt_connected
     if rc == 0:
         print("Connected to MQTT")
+        mqtt_connected = True
     else:
         print("Failed to connect, return code %d\n", rc)
+
+def on_connect_fail(client, userdata, flags, rc):
+    print("Failed to connect, return code %d\n", rc)
+
+print("Trying to connect to:")
+print(f"\thost: {conf['mqtt']['host']}")
+print(f"\tport: {conf['mqtt']['port']}")
+print(f"\tusername: {conf['mqtt']['username']}")
+print(f"\tpassword: {conf['mqtt']['password']}")
 
 client = mqtt_client.Client()
 client.username_pw_set(conf['mqtt']['username'], conf['mqtt']['password'])
 client.on_connect = on_connect
-client.connect(conf['mqtt']['host'], conf['mqtt']['port'], 60)
+client.on_connect_fail = on_connect_fail
+client.connect(conf['mqtt']['host'], conf['mqtt']['port'])
+client.loop_start()
+
+counter = 0
+while not mqtt_connected:
+    print("Waiting to connect...")
+    time.sleep(3)
+    if counter > 10:
+        print("Could not connect")
+        exit
 
 # Send intents
 for siteId, data in site_sentences.items():
