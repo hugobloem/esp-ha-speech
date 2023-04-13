@@ -4,15 +4,9 @@ dependencies:
   chmorgan/esp-file-iterator: "1.0.0"
   chmorgan/esp-libhelix-mp3: "1.0.3"
   
-  espressif/esp-box: "~2.2.0"
+  espressif/esp-box: "2.3.3"
   espressif/esp-sr: "1.2.0"
-  espressif/led_strip:
-    version: "~2.0.0"
-    rules:
-      - if: "idf_version >=5.0"
+  espressif/led_strip: "~2.0.0"
   espressif/json_generator: ^1
   espressif/json_parser: =1.0.0
-  espressif/qrcode:
-    version: ^0.1.0
-    rules:
-      - if: "idf_version >=5.0"
+  espressif/qrcode: ^0.1.0
