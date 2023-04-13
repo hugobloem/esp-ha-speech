@@ -9,6 +9,7 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include "esp_err.h"
+#include "esp_check.h"
 #include "esp_mn_models.h"
 #include "esp_mn_speech_commands.h"
 #include "nvs_flash.h"
@@ -72,9 +73,10 @@ void app_hass_send_cmd(char *cmd)
 #endif
 }
 
-esp_err_t app_hass_write_cmd_to_nvs(uint32_t keynum, char *cmd, char *phoneme)
+esp_err_t app_hass_write_cmd_to_nvs(char *cmd, char *phoneme)
 {
     ESP_LOGI(TAG, "Saving cmd %d to NVS", keynum);
+    ESP_RETURN_ON_FALSE(keynum>200, ESP_FAIL, TAG, "Too many commands, only 200 allowed");
     nvs_handle_t my_handle = {0};
     esp_err_t err = nvs_open(NAME_SPACE, NVS_READWRITE, &my_handle);
     if (err != ESP_OK) {
@@ -89,6 +91,7 @@ esp_err_t app_hass_write_cmd_to_nvs(uint32_t keynum, char *cmd, char *phoneme)
         ESP_LOGI(TAG, "Saving cmd %d to NVS", keynum);
         err |= nvs_commit(my_handle);
         nvs_close(my_handle);
+        keynum++;
     }
     return ESP_OK == err ? ESP_OK : ESP_FAIL;
 }
@@ -97,15 +100,14 @@ esp_err_t app_hass_write_cmds_to_nvs(void)
 {
     ESP_LOGI(TAG, "Saving cmds to NVS");
     // settings_check(&g_sys_param);
-    int keynum = 0;
+    keynum = 0;
     esp_err_t err = ESP_OK;
     while (keynum < 201) {
         sr_cmd_t *cmd_info = app_sr_get_cmd_from_id(keynum);
         if (cmd_info == NULL) {
             break;
         }
-        err = app_hass_write_cmd_to_nvs(keynum, cmd_info->str, cmd_info->phoneme);
-        keynum++;
+        err = app_hass_write_cmd_to_nvs(cmd_info->str, cmd_info->phoneme);
     }
     return ESP_OK == err ? ESP_OK : ESP_FAIL;
 }
@@ -115,7 +117,7 @@ esp_err_t app_hass_read_cmds_from_nvs(void)
     ESP_LOGI(TAG, "Reading cmds from NVS");
     nvs_handle_t my_handle = {0};
     esp_err_t err = nvs_open(NAME_SPACE, NVS_READWRITE, &my_handle);
-    uint32_t keynum = 0;
+    keynum = 0;
     if (err != ESP_OK) {
         ESP_LOGI(TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(err));
     } else {
@@ -148,10 +150,10 @@ esp_err_t app_hass_rm_cmds_from_nvs(void)
     ESP_LOGI(TAG, "Removing cmds from NVS");
     nvs_handle_t my_handle = {0};
     esp_err_t err = nvs_open(NAME_SPACE, NVS_READWRITE, &my_handle);
-    uint32_t keynum = 0;
     if (err != ESP_OK) {
         ESP_LOGI(TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(err));
     } else {
+        keynum = 0;
         while (keynum < 201) {
             char cmd_key[10];
             char phoneme_key[10];
@@ -164,6 +166,7 @@ esp_err_t app_hass_rm_cmds_from_nvs(void)
         ESP_LOGI(TAG, "Removed %d cmds from NVS", keynum);
         err |= nvs_commit(my_handle);
         nvs_close(my_handle);
+        keynum = 0;
     }
     return ESP_OK;
 }
@@ -197,7 +200,7 @@ void app_hass_add_cmd_from_msg(cJSON *root) {
         // Add sr command to speech recognition
         app_hass_add_cmd(sr_txt->valuestring, sr_phn->valuestring, true);
 
-        app_hass_write_cmd_to_nvs(keynum, sr_txt->valuestring, sr_phn->valuestring);
+        app_hass_write_cmd_to_nvs(sr_txt->valuestring, sr_phn->valuestring);
         ESP_LOGI(TAG, "Added command: %s; %s", sr_txt->valuestring, sr_phn->valuestring);
         return;
     }
