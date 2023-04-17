@@ -122,6 +122,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
+
 void app_api_rest_get(char* path, char* response_buffer) {
     esp_http_client_config_t config = {
         .host = HASS_URL,
@@ -188,20 +189,26 @@ void app_api_rest_post(char* path, char* response_buffer, char* message) {
     esp_http_client_cleanup(client);
 }
 
-// void app_api_rest_test(void *pvParameters) {
+void app_api_rest_test(void *pvParameters) {
 
-//     char response[MAX_HTTP_OUTPUT_BUFFER] = {0};
-//     get("/api/", response);
+    char response[MAX_HTTP_OUTPUT_BUFFER] = {0};
+    app_api_rest_get("/api/", response);
 
-//     if (strcmp(response, "{\"message\":\"API running\"}")) {
-//         ui_net_config_update_cb(UI_NET_EVT_CLOUD_CONNECTED, NULL);
-//         hass_connected = true;
-//     } else {
-//         ui_net_config_update_cb(UI_NET_EVT_WIFI_CONNECTED, NULL);
-//         hass_connected = false;
-//     }
+    if (strcmp(response, "{\"message\":\"API running\"}")) {
+        ui_net_config_update_cb(UI_NET_EVT_CLOUD_CONNECTED, NULL);
+    } else {
+        ui_net_config_update_cb(UI_NET_EVT_WIFI_CONNECTED, NULL);
+    }
 
-//     ESP_LOGI(TAG, "Connected");
+    ESP_LOGI(TAG, "Connected");
 
-//     vTaskDelete(NULL);
-// }
+    vTaskDelete(NULL);
+}
+
+/* send recognised command string to home assistant */
+void app_api_rest_send_recognised_cmd(char *cmd_str) {
+    char response[MAX_HTTP_OUTPUT_BUFFER] = {0};
+    char *message = malloc(strlen(cmd_str) + 100);
+    sprintf(message, "{\"text\": \"%s\"}", cmd_str);
+    app_api_rest_post("/api/conversation/process", response, message);
+}

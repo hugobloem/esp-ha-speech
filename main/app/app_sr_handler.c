@@ -200,7 +200,7 @@ void sr_handler_task(void *pvParam)
             }
 #endif
 
-            app_hass_send_cmd((char *) cmd->str);
+            app_hass_send_recognised_cmd((char *) cmd->str);
             
 #if !SR_RUN_TEST
             if (SR_LANG_EN == sr_current_lang) {

@@ -9,7 +9,7 @@ extern "C" {
 void app_hass_init();
 bool app_hass_is_connected(void);
 
-void app_hass_send_cmd(char *cmd);
+void app_hass_send_recognised_cmd(char *cmd);
 
 void app_hass_add_cmd(char *cmd, char *phoneme, bool commit);
 void app_hass_add_cmd_from_msg(cJSON *root);

@@ -24,9 +24,6 @@
 
 #include "cJSON.h"
 
-#define MAX_HTTP_RECV_BUFFER 512
-#define MAX_HTTP_OUTPUT_BUFFER 2048
-
 #define NAME_SPACE "sr_cmds"
 
 #include "secrets.h"
@@ -37,38 +34,18 @@ static const char *TAG = "app_hass";
 static bool hass_connected = false;
 static uint32_t keynum = 0;
 
-static void app_api_rest_test(void *pvParameters) {
 
-    char response[MAX_HTTP_OUTPUT_BUFFER] = {0};
-    app_api_rest_get("/api/", response);
-
-    if (strcmp(response, "{\"message\":\"API running\"}")) {
-        ui_net_config_update_cb(UI_NET_EVT_CLOUD_CONNECTED, NULL);
-        hass_connected = true;
-    } else {
-        ui_net_config_update_cb(UI_NET_EVT_WIFI_CONNECTED, NULL);
-        hass_connected = false;
-    }
-
-    ESP_LOGI(TAG, "Connected");
-
-    vTaskDelete(NULL);
-}
-
-void app_hass_send_cmd(char *cmd)
+void app_hass_send_recognised_cmd(char *cmd_str)
 {
 #if NLU_MODE == NLU_RHASSPY
 
     ESP_LOGI(TAG, "Sending command to Rhasspy");
-    app_api_mqtt_send_cmd("hermes/nlu/query", cmd);
+    app_api_mqtt_send_recognised_cmd(cmd_str);
 
 #elif NLU_MODE == NLU_HASS
 
     ESP_LOGI(TAG, "Sending command to Home Assistant");
-    char response[MAX_HTTP_OUTPUT_BUFFER] = {0};
-    char *message = malloc(strlen(cmd) + 100);
-    sprintf(message, "{\"text\": \"%s\"}", cmd);
-    app_api_rest_post("/api/conversation/process", response, message);
+    app_api_rest_send_recognised_cmd(cmd_str);    
 
 #endif
 }
@@ -225,6 +202,12 @@ void app_hass_rm_all_cmd(cJSON *root) {
         ESP_LOGI(TAG, "Removed all commands");
         return;
     }
+}
+
+
+void app_hass_cmd_result(cJSON *root) {
+    // Receives command result from HASS/RHASSPY and processes it
+    
 }
 
 

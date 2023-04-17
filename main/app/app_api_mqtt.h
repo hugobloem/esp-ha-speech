@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 void app_api_mqtt_start(void);
-void app_api_mqtt_send_cmd(char *topic, char *payload);
+esp_err_t app_api_mqtt_send_recognised_cmd(char *payload);
 
 #ifdef __cplusplus
 }

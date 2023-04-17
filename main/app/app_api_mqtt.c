@@ -92,8 +92,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
     esp_mqtt_event_handle_t event = event_data;
-    esp_mqtt_client_handle_t client = event->client;
-    int msg_id;
+    // esp_mqtt_client_handle_t client = event->client;
+    // int msg_id;
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
@@ -173,11 +173,14 @@ void app_api_mqtt_start(void)
 
 }
 
-/* send commands to mqtt */
-void app_api_mqtt_send_cmd(char *topic, char *cmd)
+/* send recognised voice command to mqtt */
+esp_err_t app_api_mqtt_send_recognised_cmd(char *cmd)
 {
+    ESP_RETURN_ON_FALSE(mqtt_connected, ESP_FAIL, TAG, "MQTT not connected");
+
     char *payload = malloc(strlen(cmd) + 100);
     sprintf(payload, "{\"input\": \"%s\", \"siteId\": \"%s\"}", cmd, MQTT_SITE_ID);
 
-    esp_mqtt_client_publish(client, topic, payload, 0, 0, 0);
+    esp_mqtt_client_publish(client, "hermes/nlu/query", payload, 0, 0, 0);
+    return ESP_OK;
 }
