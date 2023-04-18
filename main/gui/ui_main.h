@@ -31,6 +31,7 @@ lv_obj_t *ui_main_get_status_bar(void);
 void ui_main_status_bar_set_wifi(bool is_connected);
 void ui_main_status_bar_set_cloud(bool is_connected);
 void ui_btn_rm_all_cb(void);
+void ui_main_menu(int32_t index_id);
 
 #ifdef __cplusplus
 }
