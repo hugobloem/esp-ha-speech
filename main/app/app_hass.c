@@ -76,7 +76,7 @@ void app_hass_send_cmd(char *cmd)
 esp_err_t app_hass_write_cmd_to_nvs(char *cmd, char *phoneme)
 {
     ESP_LOGI(TAG, "Saving cmd %d to NVS", keynum);
-    ESP_RETURN_ON_FALSE(keynum>200, ESP_FAIL, TAG, "Too many commands, only 200 allowed");
+    ESP_RETURN_ON_FALSE(keynum<200, ESP_FAIL, TAG, "Too many commands, only 200 allowed, %d", keynum);
     nvs_handle_t my_handle = {0};
     esp_err_t err = nvs_open(NAME_SPACE, NVS_READWRITE, &my_handle);
     if (err != ESP_OK) {
