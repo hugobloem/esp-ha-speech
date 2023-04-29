@@ -11,7 +11,10 @@
 typedef struct {
     bool need_hint;
     sr_language_t sr_lang;
+    uint8_t brightness; // 0 - 100%
     uint8_t volume; // 0 - 100%
+    char wifi_ssid[32];
+    char wifi_password[32];
 } sys_param_t;
 
 esp_err_t settings_read_parameter_from_nvs(void);

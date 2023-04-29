@@ -24,7 +24,7 @@
 #include "ui_player.h"
 #include "ui_device_ctrl.h"
 #include "ui_about_us.h"
-#include "ui_net_config.h"
+#include "ui_settings_config.h"
 #include "ui_boot_animate.h"
 
 static const char *TAG = "ui_main";
@@ -44,7 +44,6 @@ static lv_obj_t *g_lab_wifi = NULL;
 static lv_obj_t *g_lab_cloud = NULL;
 static lv_obj_t *g_status_bar = NULL;
 
-static void ui_main_menu(int32_t index_id);
 static void ui_led_set_visible(bool visible);
 
 void ui_acquire(void)
@@ -172,9 +171,9 @@ static void about_us_end_cb(void)
     ui_main_menu(g_item_index);
 }
 
-static void net_end_cb(void)
+static void settings_end_cb(void)
 {
-    ESP_LOGI(TAG, "net end");
+    ESP_LOGI(TAG, "settings end");
     ui_main_menu(g_item_index);
 }
 
@@ -196,7 +195,7 @@ LV_IMG_DECLARE(icon_network)
 
 static item_desc_t item[] = {
     { .name = "Device Control", .img_src = (void *) &icon_dev_ctrl},
-    { .name = "Network",        .img_src = (void *) &icon_network},
+    { .name = "Settings",        .img_src = (void *) &icon_network},
     { .name = "Media Player",   .img_src = (void *) &icon_media_player},
     { .name = "Help",           .img_src = (void *) &icon_help},
     { .name = "About Us",       .img_src = (void *) &icon_about_us},
@@ -267,7 +266,7 @@ static void menu_enter_cb(lv_event_t *e)
         break;
     case 1:
         ui_status_bar_set_visible(true);
-        ui_net_config_start(net_end_cb);
+        ui_settings_config_start(settings_end_cb);
         break;
     case 2:
         ui_status_bar_set_visible(true);
@@ -286,7 +285,7 @@ static void menu_enter_cb(lv_event_t *e)
     }
 }
 
-static void ui_main_menu(int32_t index_id)
+void ui_main_menu(int32_t index_id)
 {
     if (!g_page_menu) {
         g_page_menu = lv_obj_create(lv_scr_act());

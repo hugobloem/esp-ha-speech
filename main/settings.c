@@ -24,7 +24,10 @@ static sys_param_t g_sys_param = {0};
 static const sys_param_t g_default_sys_param = {
     .need_hint = 1,
     .sr_lang = SR_LANG_EN,
+    .brightness = 100, // default brightness is 100%
     .volume = 70, // default volume is 70%
+    .wifi_ssid = "your_ssid",
+    .wifi_password = "your_password",
 };
 
 static esp_err_t settings_check(sys_param_t *param)
@@ -86,3 +89,4 @@ sys_param_t *settings_get_parameter(void)
 {
     return &g_sys_param;
 }
+
