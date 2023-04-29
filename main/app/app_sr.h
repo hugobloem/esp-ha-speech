@@ -70,6 +70,7 @@ esp_err_t app_sr_remove_all_cmd(void);
 sr_cmd_t *app_sr_get_cmd_from_id(uint32_t id);
 uint8_t app_sr_search_cmd_from_user_cmd(sr_user_cmd_t user_cmd, uint8_t *id_list, uint16_t max_len);
 uint8_t app_sr_search_cmd_from_phoneme(const char *phoneme, uint8_t *id_list, uint16_t max_len);
+bool app_sr_is_phoneme_exists(const char *phoneme);
 esp_err_t app_sr_update_cmds(void);
 
 #ifdef __cplusplus

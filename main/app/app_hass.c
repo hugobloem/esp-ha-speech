@@ -197,6 +197,9 @@ void app_hass_add_cmd_from_msg(cJSON *root) {
     if (sr_txt == NULL || sr_phn == NULL) {
         ESP_LOGE(TAG, "Error parsing text");
         return;
+    } else if (app_sr_is_phoneme_exists(sr_phn->valuestring)) {
+        ESP_LOGE(TAG, "Command already exists");
+        return;
     } else {
         // Add sr command to speech recognition
         app_hass_add_cmd(sr_txt->valuestring, sr_phn->valuestring, true);
