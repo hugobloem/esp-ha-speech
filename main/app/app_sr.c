@@ -532,6 +532,19 @@ uint8_t app_sr_search_cmd_from_phoneme(const char *phoneme, uint8_t *id_list, ui
     return cmd_num;
 }
 
+bool app_sr_is_phoneme_exists(const char *phoneme)
+{
+    ESP_RETURN_ON_FALSE(NULL != g_sr_data, false, TAG, "SR is not running");
+
+    sr_cmd_t *it;
+    SLIST_FOREACH(it, &g_sr_data->cmd_list, next) {
+        if (0 == strcmp(phoneme, it->phoneme)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 sr_cmd_t *app_sr_get_cmd_from_id(uint32_t id)
 {
     ESP_RETURN_ON_FALSE(NULL != g_sr_data, NULL, TAG, "SR is not running");
