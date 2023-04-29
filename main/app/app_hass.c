@@ -26,6 +26,7 @@
 
 #define MAX_HTTP_RECV_BUFFER 512
 #define MAX_HTTP_OUTPUT_BUFFER 2048
+#define MAX_CMDS 200
 
 #define NAME_SPACE "sr_cmds"
 
@@ -76,7 +77,7 @@ void app_hass_send_cmd(char *cmd)
 esp_err_t app_hass_write_cmd_to_nvs(char *cmd, char *phoneme)
 {
     ESP_LOGI(TAG, "Saving cmd %d to NVS", keynum);
-    ESP_RETURN_ON_FALSE(keynum>200, ESP_FAIL, TAG, "Too many commands, only 200 allowed");
+    ESP_RETURN_ON_FALSE(keynum<MAX_CMDS, ESP_FAIL, TAG, "Too many commands, only %d allowed", MAX_CMDS);
     nvs_handle_t my_handle = {0};
     esp_err_t err = nvs_open(NAME_SPACE, NVS_READWRITE, &my_handle);
     if (err != ESP_OK) {
@@ -102,7 +103,7 @@ esp_err_t app_hass_write_cmds_to_nvs(void)
     // settings_check(&g_sys_param);
     keynum = 0;
     esp_err_t err = ESP_OK;
-    while (keynum < 201) {
+    while (keynum < MAX_CMDS) {
         sr_cmd_t *cmd_info = app_sr_get_cmd_from_id(keynum);
         if (cmd_info == NULL) {
             break;
@@ -121,7 +122,7 @@ esp_err_t app_hass_read_cmds_from_nvs(void)
     if (err != ESP_OK) {
         ESP_LOGI(TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(err));
     } else {
-        while (keynum < 201) {
+        while (keynum < MAX_CMDS) {
             char cmd[SR_CMD_STR_LEN_MAX];
             char phoneme[SR_CMD_PHONEME_LEN_MAX];
             size_t cmd_len = sizeof(cmd);
@@ -154,7 +155,7 @@ esp_err_t app_hass_rm_cmds_from_nvs(void)
         ESP_LOGI(TAG, "Error (%s) opening NVS handle!\n", esp_err_to_name(err));
     } else {
         keynum = 0;
-        while (keynum < 201) {
+        while (keynum < MAX_CMDS) {
             char cmd_key[10];
             char phoneme_key[10];
             sprintf(cmd_key, "cmd%d", keynum);
@@ -239,7 +240,7 @@ void app_hass_init(void)
     nvs_close(nvs_handle);
     if (ESP_ERR_NVS_NOT_FOUND == ret) {
         ESP_LOGW(TAG, "Cmd NVS not found, creating new one");
-        app_hass_write_cmds_to_nvs();
+        // app_hass_write_cmds_to_nvs();
     } else if (ESP_OK == ret) {
         app_sr_remove_all_cmd();
         esp_mn_commands_free();
