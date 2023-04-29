@@ -71,21 +71,19 @@ void setting_select_button_cb(lv_event_t *e)
 
         switch (id) {
             case 0:
-                // need hint
+                // brightness
+                change_number_setting_page(sys_param->brightness, 0, 100);
                 break;
             case 1:
                 // volume
-                ESP_LOGI(TAG, "volume: %d", sys_param->volume);
                 change_number_setting_page(sys_param->volume, 0, 100);
                 break;
             case 2:
                 // wifi ssid
-                ESP_LOGI(TAG, "wifi ssid: %s", sys_param->wifi_ssid);
                 change_text_setting_page(sys_param->wifi_ssid);
                 break;
             case 3:
                 // wifi password
-                ESP_LOGI(TAG, "wifi password: %s", sys_param->wifi_password);
                 change_text_setting_page(sys_param->wifi_password);
                 break;
             default:
@@ -107,12 +105,17 @@ void setting_change_button_cb(lv_event_t *e)
         sys_param_t *sys_param = settings_get_parameter();
         switch (id) {
             case 0:
-                // need hint
+                // brightness
+                uint8_t brightness = lv_slider_get_value(scp_slider);
+                sys_param->brightness = brightness;
+                bsp_display_brightness_set(sys_param->brightness);
+                ESP_LOGI(TAG, "New brightness: %d", sys_param->brightness);
                 break;
             case 1:
                 // volume
                 uint8_t volume = lv_slider_get_value(scp_slider);
                 sys_param->volume = volume;
+                ESP_LOGI(TAG, "New volume: %d", sys_param->volume);
                 break;
             case 2:
                 // wifi ssid

@@ -107,8 +107,10 @@ void app_main(void)
     bsp_display_start();
     bsp_board_init();
 
+    sys_param_t *param = settings_get_parameter();
     ESP_LOGI(TAG, "Display LVGL demo");
     bsp_display_backlight_on();
+    bsp_display_brightness_set(param->brightness);
     ESP_ERROR_CHECK(ui_main_start());
 
     bsp_codec_config_t *codec_handle = bsp_board_get_codec_handle();
