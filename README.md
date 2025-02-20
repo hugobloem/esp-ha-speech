@@ -1,4 +1,8 @@
 # esp-ha-speech: Local Speech Recognition on an ESP32
+
+> [!NOTE]
+> This project was mainly a proof-of-concept and is now superseded by [esphome's voice-assistant implementation](https://github.com/esphome/wake-word-voice-assistants). 
+
 This repository provides the codes to do hot-word detection and speech recognition on an ESP32, fully on-device!
 
 (Based on the Espressif example in [`esp-box`](https://github.com/espressif/esp-box))
